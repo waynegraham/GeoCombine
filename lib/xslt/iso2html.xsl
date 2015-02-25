@@ -46,6 +46,43 @@ http://www.w3.org/TR/xslt
   <!-- Import another XSLT file for limiting the number of decimal places: -->
 
   <xsl:import href="utils/strip-digits.xsl"/>
+  
+  <!-- Variables controlling the elements and attributes used to create html
+       output -->
+
+  <!-- Top level heading element -->
+  <xsl:variable name="heading-1" select="'h3'" />
+  <xsl:attribute-set name="heading-1-attr" />
+
+  <!-- Second level heading element -->
+  <xsl:variable name="heading-2" select="'h4'" />
+  <xsl:attribute-set name="heading-2-attr" />
+
+  <!-- Third level heading element -->
+  <xsl:variable name="heading-3" select="'h5'" />
+  <xsl:attribute-set name="heading-3-attr" />
+
+  <!-- Element used to wrap one or more key/value pairs -->
+  <xsl:variable name="list" select="'dl'" />
+  <xsl:attribute-set name="list-attr">
+      <xsl:attribute name="class">dl-horizontal</xsl:attribute>
+  </xsl:attribute-set>
+
+  <!-- Element used to wrap a key in a key/value pair -->
+  <xsl:variable name="key" select="'dt'" />
+  <xsl:attribute-set name="key-attr" />
+
+  <!-- Element used to wrap a value in a key/value pair -->
+  <xsl:variable name="value" select="'dd'" />
+  <xsl:attribute-set name="value-attr" />
+
+  <!-- Element used to wrap content of a top level section -->
+  <xsl:variable name="section-1" select="'section'" />
+  <xsl:attribute-set name="section-1-attr" />
+
+  <!-- Element used to wrap an entity/attribute definition -->
+  <xsl:variable name="section-2" select="'section'" />
+  <xsl:attribute-set name="section-2-attr" />
 
   <!-- 
 
@@ -94,24 +131,6 @@ http://www.w3.org/TR/xslt
       </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
-  
-  <!-- Define a variable which creates a JavaScript array of the bounding box
-       of the Spatial_Domain/Bounding element in the ISO for use in the Google
-       Maps API, which is controlled by the loadGoogleMap function inside
-       the google_maps.ssi include file. NOTE: This function expects the
-       bounding box to be provided in a specific order: north, south, east,
-       west: -->
-
-  <xsl:variable name="bbox">    
-    <xsl:if test="gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:northBoundLatitude/gco:Decimal">
-      <xsl:text> [ </xsl:text>
-      <xsl:value-of select="gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:northBoundLatitude/gco:Decimal"/><xsl:text>, </xsl:text>
-      <xsl:value-of select="gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:southBoundLatitude/gco:Decimal"/><xsl:text>, </xsl:text>
-      <xsl:value-of select="gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:eastBoundLongitude/gco:Decimal"/><xsl:text>, </xsl:text>
-      <xsl:value-of select="gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:westBoundLongitude/gco:Decimal"/>
-      <xsl:text> ] </xsl:text>
-    </xsl:if>
-  </xsl:variable>
 
   <!-- TOP-LEVEL: HTML ******************************************************-->
 
@@ -122,68 +141,10 @@ http://www.w3.org/TR/xslt
     <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml"><xsl:value-of select="$newline"/>
     <head><xsl:value-of select="$newline"/>
     <title><xsl:value-of select="gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString"/></title><xsl:value-of select="$newline"/>
-    <xsl:comment>
-If you want to show polylines on a Google Map (like the rectangle used to
-outline the data set geographic coverage), you need to include the VML
-namespace in the html tag and the following CSS code in an XHTML compliant
-doctype to make everything work properly in IE:
-</xsl:comment><xsl:value-of select="$newline"/>
-    <style type="text/css">
-
-  v\:* {
-    behavior:url(#default#VML);
-  }
-
-  .wrapline {
-    /* http://perishablepress.com/press/2010/06/01/wrapping-content/ */
-    white-space: pre;           /* CSS 2.0 */
-    white-space: pre-wrap;      /* CSS 2.1 */
-    white-space: pre-line;      /* CSS 3.0 */
-    white-space: -pre-wrap;     /* Opera 4-6 */
-    white-space: -o-pre-wrap;   /* Opera 7 */
-    white-space: -moz-pre-wrap; /* Mozilla */
-    white-space: -hp-pre-wrap;  /* HP Printers */
-    word-wrap: break-word;
-    width: 550px; 
-  }
-
-</style><xsl:value-of select="$newline"/>
     </head><xsl:value-of select="$newline"/>
     <body><xsl:value-of select="$newline"/>
-    <table width="99%" border="0" cellspacing="2" cellpadding="0">
-      <tr>
-        <td valign="top">
-          <table width="98%" border="0" align="center" cellpadding="2" cellspacing="8" style="margin-top: -20px;">
-            <tr>
-              <td valign="top" >
-                <!--<p style="color: darkred; background-color: lightyellow; border: 1px dashed lightgray; padding: 2px;"><b>NOTE: ISO metadata output is under construction. Please check back later...</b></p>-->
-                <h2 style="margin-right: 185px; text-transform: none;"><xsl:value-of select="gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString"/></h2>
-                <ul>
-                  <li><a href="#Identification_Information">Identification Information</a></li>
-                  <xsl:if test="string-length( gmd:MD_Metadata/gmd:dataQualityInfo )">
-                    <li><a href="#Data_Quality_Information">Data Quality Information</a></li>
-                  </xsl:if>
-                  <xsl:if test="string-length( gmd:MD_Metadata/gmd:spatialRepresentationInfo )">
-                    <li><a href="#Spatial_Representation_Information">Spatial Representation Information</a></li>
-                  </xsl:if>
-                  <xsl:if test="string-length( gmd:MD_Metadata/gmd:contentInfo )">
-                    <li><a href="#Content_Information">Content Information</a></li>
-                  </xsl:if>
-                  <xsl:if test="string-length( gmd:MD_Metadata/gmd:distributionInfo )">
-                    <li><a href="#Distribution_Information">Distribution Information</a></li>                  
-                  </xsl:if>
-                  <xsl:if test="string-length( gmd:MD_Metadata/gmd:acquisitionInformation )">
-				            <li><a href="#Acquisition_Information">Acquisition Information</a></li>
-                  </xsl:if>
-                  <li><a href="#Metadata_Reference_Information">Metadata Reference Information</a></li>
-                </ul>
-                <xsl:apply-templates select="gmd:MD_Metadata"/>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
+    <xsl:apply-templates select="gmd:MD_Metadata"/>
+              
     <xsl:comment> END MAIN CONTENT </xsl:comment><xsl:value-of select="$newline"/>
   </body><xsl:value-of select="$newline"/>
     </html>
@@ -201,7 +162,6 @@ doctype to make everything work properly in IE:
       <h4>Services:</h4>
     </xsl:if>
     <xsl:apply-templates select="gmd:identificationInfo/srv:SV_ServiceIdentification"/>
-    <p><a href="javascript:void(0)" onClick="window.scrollTo( 0, 0 ); this.blur(); return false;">Back to Top</a></p>
     <xsl:apply-templates select="gmd:dataQualityInfo/gmd:DQ_DataQuality"/>
     <xsl:apply-templates select="gmd:spatialRepresentationInfo/gmd:MD_GridSpatialRepresentation"/>
     <xsl:apply-templates select="gmd:contentInfo"/>
@@ -220,10 +180,8 @@ doctype to make everything work properly in IE:
   --> 
 
   <xsl:template name="metadataReferenceInfo">
-    <hr/>
     <h3><a name="Metadata_Reference_Information"></a>Metadata Reference Information:</h3>
     <xsl:call-template name="metadataEntitySetInfo"/>
-    <p><a href="javascript:void(0)" onClick="window.scrollTo( 0, 0 ); this.blur(); return false;">Back to Top</a></p>
   </xsl:template>
  
   <!-- METADATA_ENTITY_SET_INFORMATION: ************************************--> 
@@ -427,15 +385,20 @@ doctype to make everything work properly in IE:
   <!-- IDENTIFICATION_INFORMATION: ******************************************-->
  
   <xsl:template match="gmd:identificationInfo/gmd:MD_DataIdentification">
-    <hr/>
-    <h3><a name="Identification_Information"></a> Identification Information:</h3>
+    <h3>Identification Information</h3>
     <xsl:apply-templates select="gmd:citation"/>
-    <xsl:apply-templates select="gmd:abstract"/>
-    <xsl:apply-templates select="gmd:purpose"/>
-    <xsl:apply-templates select="gmd:credit"/>
-    <xsl:apply-templates select="gmd:status"/>
-    <xsl:apply-templates select="gmd:pointOfContact"/>
-    <xsl:apply-templates select="gmd:resourceMaintenance"/>
+    <h4>Description</h4>
+    <dl>
+      <xsl:apply-templates select="gmd:abstract"/>
+      <xsl:apply-templates select="gmd:purpose"/>
+    </dl>
+    <!-- <xsl:apply-templates select="gmd:credit"/> -->
+    <h4>Status</h4>
+    <dl>
+      <xsl:apply-templates select="gmd:status"/>
+      <xsl:apply-templates select="gmd:pointOfContact"/>
+      <xsl:apply-templates select="gmd:resourceMaintenance"/>
+    </dl>
     <xsl:apply-templates select="gmd:graphicOverview"/>
     <xsl:if test="gmd:descriptiveKeywords">
       <h4>Descriptive Keywords:</h4>
@@ -462,28 +425,25 @@ doctype to make everything work properly in IE:
   </xsl:template>
 
   <xsl:template match="gmd:citation">
-    <h4>Citation:</h4>
-    <font>
     <xsl:call-template name="CI_Citation">
       <xsl:with-param name="element" select="gmd:CI_Citation"/>
-      <xsl:with-param name="italicize-heading" select="true()"/>
-      <xsl:with-param name="wrap-text" select="true()"/>
     </xsl:call-template>
-    </font>
   </xsl:template>
 
   <xsl:template match="gmd:abstract">
-    <h4>Abstract:</h4>
-    <p>
+    <dt>Abstract</dt>
+    <dd>
       <xsl:call-template name="replace-newlines">
         <xsl:with-param name="element" select="gco:CharacterString"/>
       </xsl:call-template>
-    </p>
+    </dd>
   </xsl:template>
 
   <xsl:template match="gmd:purpose">
-    <h4>Purpose:</h4>
-    <p><xsl:value-of select="."/></p>
+    <dt>Purpose</dt>
+    <dd>
+      <xsl:value-of select="."/>
+    </dd>
   </xsl:template>
 
   <xsl:template match="gmd:credit">
@@ -492,9 +452,21 @@ doctype to make everything work properly in IE:
   </xsl:template>
 
   <xsl:template match="gmd:status">
-    <h4 style="display: inline">Status:</h4>
-    <p style="display: inline"><xsl:value-of select="."/> (<a href="http://pacioos.org/metadata/gmxCodelists.html#MD_ProgressCode" target="_blank">MD_ProgressCode</a>)</p>
-    <p></p>
+      <dd><xsl:value-of select="."/></dd>
+      <xsl:for-each select="gmd:maintenanceAndUpdateFrequency">
+        <dt>>Maintenance and Update Frequency</dt>
+        <xsl:value-of select="."/>
+      </xsl:for-each>
+      <xsl:for-each select="gmd:updateScope">
+        <p><b><i>Update Scope:</i></b> <xsl:value-of select="."/> (<a href="http://pacioos.org/metadata/gmxCodelists.html#MD_ScopeCode">MD_ScopeCode</a>)</p>
+      </xsl:for-each>
+      <xsl:for-each select="gmd:contact">
+        <p><b><i>Contact:</i></b></p>
+        <xsl:call-template name="CI_ResponsibleParty">
+          <xsl:with-param name="element" select="gmd:CI_ResponsibleParty"/>
+          <xsl:with-param name="italicize-heading" select="false()"/>
+        </xsl:call-template>
+      </xsl:for-each>
   </xsl:template>
 
   <xsl:template match="gmd:pointOfContact">
@@ -849,7 +821,6 @@ doctype to make everything work properly in IE:
   <!-- DATA_QUALITY_INFORMATION: ********************************************-->
 
   <xsl:template match="gmd:dataQualityInfo/gmd:DQ_DataQuality">
-    <hr/>
     <h3><a name="Data_Quality_Information"></a>Data Quality Information:</h3>
     <xsl:apply-templates select="gmd:scope"/>
     <xsl:if test="string-length( gmd:report )">
@@ -857,7 +828,6 @@ doctype to make everything work properly in IE:
       <xsl:apply-templates select="gmd:report"/>
     </xsl:if>
     <xsl:apply-templates select="gmd:lineage"/>
-    <p><a href="javascript:void(0)" onClick="window.scrollTo( 0, 0 ); this.blur(); return false;">Back to Top</a></p>
   </xsl:template>
 
   <xsl:template match="gmd:scope">
@@ -933,7 +903,6 @@ doctype to make everything work properly in IE:
   <!-- SPATIAL_REPRESENTATION_INFORMATION: **********************************-->
 
   <xsl:template match="gmd:spatialRepresentationInfo/gmd:MD_GridSpatialRepresentation">
-    <hr/>
     <h3><a name="Spatial_Representation_Information"></a>Spatial Representation Information:</h3>
     <xsl:apply-templates select="gmd:numberOfDimensions"/>
     <xsl:if test="string-length( gmd:axisDimensionProperties )">
@@ -944,7 +913,6 @@ doctype to make everything work properly in IE:
     <!-- Fill these in later when I have actual examples:
     <xsl:apply-templates select="gmd:transformationParameterAvailability"/>
     -->
-    <p><a href="javascript:void(0)" onClick="window.scrollTo( 0, 0 ); this.blur(); return false;">Back to Top</a></p>
   </xsl:template>
 
   <xsl:template match="gmd:numberOfDimensions">
@@ -1020,11 +988,9 @@ doctype to make everything work properly in IE:
   <!-- CONTENT_INFORMATION: *************************************************-->
 
   <xsl:template match="gmd:contentInfo">
-    <hr/>
     <h3><a name="Content_Information"></a>Content Information:</h3>
     <xsl:apply-templates select="gmd:MI_CoverageDescription"/>
     <xsl:apply-templates select="gmd:MD_FeatureCatalogueDescription"/>
-    <p><a href="javascript:void(0)" onClick="window.scrollTo( 0, 0 ); this.blur(); return false;">Back to Top</a></p>
   </xsl:template>
 
   <xsl:template match="gmd:MI_CoverageDescription">
@@ -1184,12 +1150,10 @@ doctype to make everything work properly in IE:
   <!-- DISTRIBUTION_INFORMATION: ********************************************-->
  
   <xsl:template match="gmd:distributionInfo/gmd:MD_Distribution">
-    <hr/>
     <h3><a name="Distribution_Information"></a>Distribution Information:</h3>
     <xsl:apply-templates select="gmd:distributor"/>
     <xsl:apply-templates select="gmd:distributionFormat"/>
     <xsl:apply-templates select="gmd:transferOptions"/>
-    <p><a href="javascript:void(0)" onClick="window.scrollTo( 0, 0 ); this.blur(); return false;">Back to Top</a></p>
   </xsl:template>
 
   <xsl:template match="gmd:distributor">
@@ -1325,11 +1289,9 @@ doctype to make everything work properly in IE:
   <!-- ACQUISITION_INFORMATION: *********************************************-->
 
   <xsl:template match="gmd:acquisitionInformation/gmd:MI_AcquisitionInformation">
-    <hr/> 
     <h3><a name="Acquisition_Information"></a>Acquisition Information:</h3>
     <xsl:apply-templates select="gmd:instrument"/>
     <xsl:apply-templates select="gmd:platform"/>
-    <p><a href="javascript:void(0)" onClick="window.scrollTo( 0, 0 ); this.blur(); return false;">Back to Top</a></p>
   </xsl:template>
 
   <xsl:template match="gmd:instrument">
@@ -1377,70 +1339,71 @@ doctype to make everything work properly in IE:
     <xsl:param name="element"/>
     <xsl:param name="italicize-heading"/>    
     <xsl:param name="wrap-text"/>
-    <xsl:choose>
-      <xsl:when test="$italicize-heading">
-        <p><b><i>Citation Information:</i></b></p>
-      </xsl:when>
-      <xsl:otherwise>
-        <p><b>Citation Information:</b></p>
-      </xsl:otherwise>
-    </xsl:choose>
-    <blockquote>    
-      <xsl:for-each select="$element/gmd:title">
-        <xsl:choose>
-          <xsl:when test="$wrap-text">
-            <div style="margin-right: 185px;"><b>Title: </b><xsl:value-of select="."/></div>
-          </xsl:when>
-          <xsl:otherwise>
-            <b>Title: </b><xsl:value-of select="."/><br/>
-          </xsl:otherwise>
-        </xsl:choose>
-      </xsl:for-each>
-      <xsl:for-each select="$element/gmd:alternateTitle">
-        <b>Alternate Title: </b><xsl:value-of select="."/><br/>
-      </xsl:for-each>
-      <xsl:for-each select="$element/gmd:date">
-        <xsl:call-template name="CI_Date">
-          <xsl:with-param name="element" select="./gmd:CI_Date"/>          
-        </xsl:call-template>        
-      </xsl:for-each>      
-      <xsl:for-each select="$element/gmd:edition">
-        <b>Edition: </b><xsl:value-of select="."/><br/>        
-      </xsl:for-each>      
-      <xsl:for-each select="$element/gmd:editionDate">
-        <b>Edition Date: </b>
-        <xsl:call-template name="date">
-          <xsl:with-param name="element" select="."/>
-        </xsl:call-template>
-        <br/>
-      </xsl:for-each>
-      <xsl:for-each select="$element/gmd:identifier">
-        <b>Identifier:</b><br/>
-        <blockquote>
-          <xsl:if test="gmd:MD_Identifier/gmd:code">
-            <b>Code: </b><xsl:value-of select="gmd:MD_Identifier/gmd:code"/><br/>
-          </xsl:if>
-          <xsl:if test="gmd:MD_Identifier/gmd:authority">
-            <b>Authority: </b><xsl:value-of select="gmd:MD_Identifier/gmd:authority"/><br/>
-          </xsl:if>
-        </blockquote>
-      </xsl:for-each>
-      <xsl:for-each select="$element/gmd:citedResponsibleParty/gmd:CI_ResponsibleParty">
-        <xsl:call-template name="CI_ResponsibleParty">
-          <xsl:with-param name="element" select="."/>
-          <xsl:with-param name="italicize-heading" select="false()"/>          
-        </xsl:call-template>        
-      </xsl:for-each>
-      <xsl:for-each select="$element/gmd:presentationForm">        
-        <b>Presentation Form: </b> <xsl:value-of select="."/> (<a href="http://pacioos.org/metadata/gmxCodelists.html#CI_PresentationFormCode" target="_blank">CI_PresentationFormCode</a>)<br/>
-      </xsl:for-each>      
-      <xsl:for-each select="$element/gmd:series">        
-        <b>Series: </b><xsl:value-of select="."/><br/> 
-      </xsl:for-each>      
-      <xsl:for-each select="$element/gmd:otherCitationDetails">
-        <b>Other Citation Details: </b><xsl:value-of select="."/><br/>        
-      </xsl:for-each>
-    </blockquote>
+    <xsl:element name="{$heading-2}" use-attribute-sets="heading-2-attr">
+        <xsl:text>Citation Information</xsl:text>
+    </xsl:element>
+    <div id="citation-information">
+      <xsl:element name="{$list}" use-attribute-sets="list-attr">
+        <xsl:for-each select="$element/gmd:title">
+          <xsl:call-template name="description">
+              <xsl:with-param name="term" select="'Title'" />
+          </xsl:call-template>
+        </xsl:for-each>
+        <xsl:for-each select="$element/gmd:alternateTitle">
+          <xsl:call-template name="description">
+              <xsl:with-param name="term" select="'Alternate title'" />
+          </xsl:call-template>
+        </xsl:for-each>
+        <xsl:for-each select="$element/gmd:date">
+          <xsl:call-template name="CI_Date">
+            <xsl:with-param name="element" select="./gmd:CI_Date"/>          
+          </xsl:call-template>        
+        </xsl:for-each>      
+        <xsl:for-each select="$element/gmd:edition">
+          <xsl:call-template name="description">
+              <xsl:with-param name="term" select="'Edition'" />
+          </xsl:call-template>
+        </xsl:for-each>      
+        <xsl:for-each select="$element/gmd:editionDate">
+          <b>Edition Date: </b>
+          <xsl:call-template name="date">
+            <xsl:with-param name="element" select="."/>
+          </xsl:call-template>
+          <br/>
+        </xsl:for-each>
+        <xsl:for-each select="$element/gmd:identifier">
+          <dt>Identifier</dt>
+          <dd>
+            <xsl:if test="gmd:MD_Identifier/gmd:code">
+              Code: <xsl:value-of select="gmd:MD_Identifier/gmd:code"/>
+            </xsl:if>
+            <xsl:if test="gmd:MD_Identifier/gmd:authority">
+              Authority: <xsl:value-of select="gmd:MD_Identifier/gmd:authority"/>
+            </xsl:if>
+          </dd>  
+        </xsl:for-each>
+        <xsl:if test="$element/gmd:citedResponsibleParty/gmd:CI_ResponsibleParty">
+          <dt>Responsible Party</dt>
+          <xsl:for-each select="$element/gmd:citedResponsibleParty/gmd:CI_ResponsibleParty">
+            <xsl:call-template name="CI_ResponsibleParty">
+              <xsl:with-param name="element" select="."/>
+            </xsl:call-template>        
+          </xsl:for-each>
+        </xsl:if>
+        <xsl:for-each select="$element/gmd:presentationForm">        
+          <dt>Presentation Form</dt>
+          <dd>
+            <xsl:value-of select="."/> (<a href="http://pacioos.org/metadata/gmxCodelists.html#CI_PresentationFormCode" target="_blank">CI_PresentationFormCode</a>)
+          </dd>
+        </xsl:for-each>      
+        <xsl:for-each select="$element/gmd:series">        
+          <b>Series: </b><xsl:value-of select="."/><br/> 
+        </xsl:for-each>      
+        <xsl:for-each select="$element/gmd:otherCitationDetails">
+          <b>Other Citation Details: </b><xsl:value-of select="."/><br/>        
+        </xsl:for-each>
+      </xsl:element>
+    </div>
   </xsl:template>
 
   <!-- template: CI_Date ****************************************************-->
@@ -1448,17 +1411,15 @@ doctype to make everything work properly in IE:
   <xsl:template name="CI_Date">
     <xsl:param name="element"/>
     <xsl:if test="string-length( $element/gmd:date ) and $element/gmd:dateType/gmd:CI_DateTypeCode != 'issued' and $element/gmd:dateType/gmd:CI_DateTypeCode != 'revision'">
-      <p><b>Date:</b></p>
-      <blockquote>
-        <b>Date: </b>
+      <dt>Date</dt>
+      <dd>
         <xsl:call-template name="date">
           <xsl:with-param name="element" select="$element/gmd:date/gco:Date"/>
         </xsl:call-template>
-        <br/>
         <xsl:if test="string-length( $element/gmd:dateType/gmd:CI_DateTypeCode )">
-          <b>Date Type: </b><xsl:value-of select="$element/gmd:dateType"/> (<a href="http://pacioos.org/metadata/gmxCodelists.html#CI_DateTypeCode">CI_DateTypeCode</a>)<br/>
+          - <xsl:value-of select="$element/gmd:dateType"/>
         </xsl:if>
-      </blockquote>
+      </dd>
     </xsl:if>
   </xsl:template>
 
@@ -1466,51 +1427,49 @@ doctype to make everything work properly in IE:
 
   <xsl:template name="CI_ResponsibleParty">
     <xsl:param name="element"/>
-    <xsl:param name="italicize-heading"/>        
-    <xsl:choose>
-      <xsl:when test="$italicize-heading">
-        <p><b><i>Responsible Party:</i></b></p>
-      </xsl:when>
-      <xsl:otherwise>
-        <p><b>Responsible Party:</b></p>
-      </xsl:otherwise>
-    </xsl:choose>
-    <blockquote>
-      <div>
+    <dd>
       <xsl:for-each select="$element/gmd:individualName">
-        <b>Individual Name: </b><xsl:value-of select="."/><br/>
+        <div itemscope="" itemtype="http://schema.org/Person">
+          <span itemprop="name">
+            <xsl:value-of select="."/>
+          </span>
+        </div>
       </xsl:for-each>
       <xsl:for-each select="$element/gmd:organisationName">
-        <xsl:if test="string-length( . )">
-          <b>Organization Name: </b><xsl:value-of select="$element/gmd:organisationName"/><br/>
-        </xsl:if>
+        <div itemscope="" itemtype="http://schema.org/Organization">
+          <span itemprop="name">
+            <xsl:value-of select="."/>
+          </span>
+          <xsl:for-each select="$element/gmd:positionName">
+            <xsl:if test=". != 'none'">
+              <<div itemscope="" itemtype="http://schema.org/Person">
+                <span itemprop="jobTitle">
+                  <xsl:value-of select="."/>
+                </span>
+              </div>
+            </xsl:if>
+          </xsl:for-each>
+          <xsl:for-each select="$element/gmd:contactInfo/gmd:CI_Contact">
+            <xsl:if test="string-length( . )">
+              <xsl:call-template name="CI_Contact">
+                <xsl:with-param name="element" select="."/>
+              </xsl:call-template>
+            </xsl:if>
+          </xsl:for-each>
+          <xsl:for-each select="$element/gmd:role">
+            <xsl:if test="string-length( ./gmd:CI_RoleCode )">
+                 - <xsl:value-of select="."/>
+            </xsl:if>
+          </xsl:for-each>
+        </div>
       </xsl:for-each>
-      <xsl:for-each select="$element/gmd:positionName">
-        <xsl:if test=". != 'none'">
-          <b>Position Name: </b><xsl:value-of select="."/><br/>
-        </xsl:if>
-      </xsl:for-each>
-      <xsl:for-each select="$element/gmd:contactInfo/gmd:CI_Contact">
-        <xsl:if test="string-length( . )">
-          <xsl:call-template name="CI_Contact">
-            <xsl:with-param name="element" select="."/>
-          </xsl:call-template>
-        </xsl:if>
-      </xsl:for-each>
-      <xsl:for-each select="$element/gmd:role">
-        <xsl:if test="string-length( ./gmd:CI_RoleCode )">
-          <b>Contact Role: </b><xsl:value-of select="."/> (<a href="http://pacioos.org/metadata/gmxCodelists.html#CI_RoleCode" target="_blank">CI_RoleCode</a>)<br/>
-        </xsl:if>
-      </xsl:for-each>
-      </div>
-    </blockquote>
+    </dd>
   </xsl:template>
 
   <!-- template: CI_Contact *************************************************-->
 
   <xsl:template name="CI_Contact">
     <xsl:param name="element"/> 
-    <b>Contact: </b>
     <xsl:for-each select="$element/gmd:phone/gmd:CI_Telephone">
       <xsl:call-template name="CI_Telephone">
         <xsl:with-param name="element" select="."/>
@@ -1532,50 +1491,54 @@ doctype to make everything work properly in IE:
 
   <xsl:template name="CI_Telephone">
     <xsl:param name="element"/>
-    <blockquote>
-      <p><b>Contact Phone: </b></p>
-      <blockquote>
-        <xsl:for-each select="$element/gmd:voice">
-          <xsl:if test="string-length( . )">
-            <b>Contact Voice Telephone: </b><xsl:value-of select="."/><br/>
-          </xsl:if>        
-        </xsl:for-each>        
-        <xsl:for-each select="$element/gmd:facsimile">
-          <xsl:if test="string-length( . )">
-            <b>Contact Facsimile Telephone: </b><xsl:value-of select="."/><br/>
-          </xsl:if>        
-        </xsl:for-each>       
-      </blockquote>    
-    </blockquote>
+      <xsl:for-each select="$element/gmd:voice">
+        <xsl:if test="string-length( . )">
+          Tel:<span itemprop='telephone'><xsl:value-of select="."/></span>
+        </xsl:if>    
+      </xsl:for-each>
+      <xsl:for-each select="$element/gmd:facsimile">
+        <xsl:if test="string-length( . )">
+          Fax:<span itemprop='faxNumber'><xsl:value-of select="."/></span>
+        </xsl:if>    
+      </xsl:for-each>
   </xsl:template>
 
   <!-- template: CI_Address *************************************************-->
 
   <xsl:template name="CI_Address">
     <xsl:param name="element"/>
-    <blockquote>
-      <p><b>Contact Address: </b></p>
-      <blockquote>
-        <xsl:if test="string-length( $element/gmd:deliveryPoint )">
-          <b>Delivery Point: </b><xsl:value-of select="$element/gmd:deliveryPoint"/><br/>
-        </xsl:if>
-        <xsl:if test="string-length( $element/gmd:city )">
-          <b>City: </b><xsl:value-of select="$element/gmd:city"/><br/>
-        </xsl:if>
-        <xsl:if test="string-length( $element/gmd:administrativeArea )">
-          <b>Administrative Area: </b><xsl:value-of select="$element/gmd:administrativeArea"/><br/>
-        </xsl:if>
-        <xsl:if test="string-length( $element/gmd:postalCode )">
-          <b>Postal Code: </b><xsl:value-of select="$element/gmd:postalCode"/><br/>
-        </xsl:if>
-        <xsl:if test="string-length( $element/gmd:country )">
-          <b>Country: </b><xsl:value-of select="$element/gmd:country"/><br/>
-        </xsl:if>
-        <xsl:if test="string-length( $element/gmd:electronicMailAddress )">
-          <b>Email: </b><a href="mailto:{$element/gmd:electronicMailAddress/gco:CharacterString}"><xsl:value-of select="$element/gmd:electronicMailAddress"/></a><br/>        
-        </xsl:if>
-      </blockquote>
-    </blockquote>    
+    <div itemprop="address" itemscope="" itemtype="http://schema.org/PostalAddress">
+      <xsl:if test="string-length( $element/gmd:deliveryPoint )">
+        <span itemprop="streetAddress">
+          <xsl:value-of select="$element/gmd:deliveryPoint"/>
+        </span>
+      </xsl:if>
+      <xsl:if test="string-length( $element/gmd:city )">
+        <span itemprop="addressLocality">
+          <xsl:value-of select="$element/gmd:city"/>
+        </span>,
+      </xsl:if>
+      <xsl:if test="string-length( $element/gmd:administrativeArea )">
+        <span itemprop="addressRegion">
+          <xsl:value-of select="$element/gmd:administrativeArea"/>
+        </span>
+      </xsl:if>
+      <xsl:if test="string-length( $element/gmd:postalCode )">
+        <span itemprop="postalCode">
+          <xsl:value-of select="$element/gmd:postalCode"/>
+        </span>
+      </xsl:if>
+      <xsl:if test="string-length( $element/gmd:country )">
+        <span itemprop="addressCountry">
+          <xsl:value-of select="$element/gmd:country"/>
+        </span>
+      </xsl:if>
+    </div>
+    <xsl:if test="string-length( $element/gmd:electronicMailAddress )">
+      <a href="mailto:{$element/gmd:electronicMailAddress/gco:CharacterString}" itemprop='email'>
+        <xsl:value-of select="$element/gmd:electronicMailAddress"/>
+      </a>
+    </xsl:if>
   </xsl:template>
 
   <!-- template: CI_OnlineResource ******************************************-->
@@ -1740,6 +1703,70 @@ doctype to make everything work properly in IE:
         <xsl:value-of select="$year"/>
       </xsl:otherwise>
     </xsl:choose>
+  </xsl:template>
+  
+  <xsl:template name="description">
+      <xsl:param name="term" />
+      <xsl:if test="normalize-space(.) != ''">
+          <xsl:element name="{$key}" use-attribute-sets="key-attr">
+              <xsl:attribute name="title">
+                  <xsl:value-of select="$term" />
+              </xsl:attribute>
+              <xsl:value-of select="$term" />
+          </xsl:element>
+          <xsl:element name="{$value}" use-attribute-sets="value-attr">
+              <xsl:value-of select="." />
+          </xsl:element>
+      </xsl:if>
+  </xsl:template>
+
+  <xsl:template name="description-link">
+      <xsl:param name="term" />
+      <xsl:if test="normalize-space(.) != ''">
+          <xsl:choose>
+              <xsl:when test="starts-with(normalize-space(.), 'http')">
+                  <xsl:element name="{$key}" use-attribute-sets="key-attr">
+                      <xsl:attribute name="title">
+                          <xsl:value-of select="$term" />
+                      </xsl:attribute>
+                      <xsl:value-of select="$term" />
+                  </xsl:element>
+                  <xsl:element name="{$value}" use-attribute-sets="value-attr">
+                      <xsl:element name="a">
+                          <xsl:attribute name="href">
+                              <xsl:value-of select="." />
+                          </xsl:attribute>
+                          <xsl:value-of select="." />
+                      </xsl:element>
+                  </xsl:element>
+              </xsl:when>
+              <xsl:otherwise>
+                  <xsl:call-template name="description">
+                      <xsl:with-param name="term" select="$term" />
+                  </xsl:call-template>
+              </xsl:otherwise>
+          </xsl:choose>
+      </xsl:if>
+  </xsl:template>
+
+  <xsl:template name="description-email">
+      <xsl:param name="term" />
+      <xsl:if test="normalize-space(.) != ''">
+          <xsl:element name="{$key}" use-attribute-sets="key-attr">
+              <xsl:attribute name="title">
+                  <xsl:value-of select="$term" />
+              </xsl:attribute>
+              <xsl:value-of select="$term" />
+          </xsl:element>
+          <xsl:element name="{$value}" use-attribute-sets="value-attr">
+              <xsl:element name="a">
+                  <xsl:attribute name="href">
+                      <xsl:value-of select="concat('mailto:', .)" />
+                  </xsl:attribute>
+                  <xsl:value-of select="." />
+              </xsl:element>
+          </xsl:element>
+      </xsl:if>
   </xsl:template>
 
 </xsl:stylesheet>
