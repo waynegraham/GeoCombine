@@ -21,10 +21,11 @@ Coveralls.wear!
 
 require 'geo_combine'
 require 'fixtures/xml_docs'
-require 'helpers'
+require 'support/test_helpers'
+require 'capybara'
 
 RSpec.configure do |config|
-  config.include Helpers
+  config.include TestHelpers
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
   # assertions if you prefer.

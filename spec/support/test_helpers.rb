@@ -1,6 +1,8 @@
-require 'json'
+module TestHelpers
+  def page
+    Capybara::Node::Simple.new(@metadata_html)
+  end
 
-module Helpers
   # From https://gist.github.com/ascendbruce/7070951
   def valid_json?(json)
     begin
