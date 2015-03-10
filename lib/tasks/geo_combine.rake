@@ -20,7 +20,8 @@ namespace :geocombine do
   end
   desc 'Index all of the GeoBlacklight documents'
   task :index do
-    solr = RSolr.connect :url => 'http://127.0.0.1:8983/solr'
+    SOLR_URL = ENV.fetch('SOLR_URL', 'http://127.0.0.1:8983/solr')
+    solr = RSolr.connect :url => SOLR_URL
     Find.find('tmp') do |path|
       if path =~ /.*geoblacklight.xml$/
         doc = File.read(path)
